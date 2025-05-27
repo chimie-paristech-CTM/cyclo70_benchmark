@@ -1,0 +1,94 @@
+                     NAME   EXX  EXXm    mu  EPT2    AA    AB    rung
+                B2GP-PLYP  0.65              0.36                 DH         
+                 B2K-PLYP  0.72              0.42                 DH
+                   B2PLYP  0.53              0.27                 DH
+                 B2T-PLYP  0.60              0.31                 DH
+                      MP2  0.00              1.00                 DH
+                 mPW2PLYP  0.55              0.25                 DH
+                  PBE0-DH  0.50              0.12                 DH
+                 PBE-QIDH  0.69              0.33                 DH
+                r2SCAN0-2  0.79              0.50                 DH
+                 DSD-BLYP  0.75              1.00  0.60  0.46     SCS-DH
+               DSD-PBEB95  0.70              1.00  0.22  0.48     SCS-DH
+               DSD-PBEP86  0.72              1.00  0.36  0.51     SCS-DH
+               kPr2SCAN50  0.50              0.30  0.00  1.33     SCS-DH
+                Pr2SCAN50  0.50              0.25  0.00  1.33     SCS-DH
+                Pr2SCAN69  0.69              0.44  0.00  1.33     SCS-DH
+                   PWPB95  0.50              0.27  0.00  1.00     SCS-DH
+       revDOD-PBEP86_2021  0.69              1.00  0.00  0.61     SCS-DH
+    revDOD-PBEP86-D4_2021  0.69              1.00  0.00  0.61     SCS-DH
+       revDSD-PBEP86_2021  0.69              1.00  0.06  0.59     SCS-DH
+    revDSD-PBEP86-D4_2021  0.69              1.00  0.06  0.59     SCS-DH
+                  RSX-0DH  0.50  1.00  0.33  0.12                 RSX-DH
+                 RSX-QIDH  0.69  1.00  0.27  0.33                 RSX-DH
+               wB2GP-PLYP  0.65  1.00  0.27  0.36                 RSX-DH
+                wB2PLYP18  0.53  1.00  0.18  0.27                 RSX-DH
+                  wB2PLYP  0.53  1.00  0.30  0.27                 RSX-DH
+                 wB88PP86  0.65  1.00  0.20  0.42                 RSX-DH
+                 wPBEPP86  0.70  1.00  0.18  0.48                 RSX-DH
+                  wB97X-2  0.64  0.95  0.30  1.00  0.53  0.45     SCS-RSX-DH
+               wPr2SCAN50  0.50  1.00  0.21  0.35  0.00  1.33     SCS-RSX-DH
+                CAM-B3LYP  0.19  0.65  0.33  0.00                 RSX-H
+                  LC-BLYP  0.00  1.00  0.33  0.00                 RSX-H
+                   LC-PBE  0.00  1.00  0.47  0.00                 RSX-H
+                     wB97  0.00  1.00  0.40  0.00                 RSX-H
+               wB97M-D3BJ  0.00  0.85  0.30  0.00                 RSX-H
+                 wB97M-D4  0.00  0.85  0.30  0.00                 RSX-H
+              wB97M-D4rev  0.00  0.85  0.30  0.00                 RSX-H
+                  wB97M-V  0.00  0.85  0.30  0.00                 RSX-H
+               wB97X-D3BJ  0.17  1.00  0.30  0.00                 RSX-H
+                 wB97X-D3  0.20  1.00  0.25  0.00                 RSX-H
+                 wB97X-D4  0.17  1.00  0.30  0.00                 RSX-H
+              wB97X-D4rev  0.17  1.00  0.30  0.00                 RSX-H
+                    wB97X  0.16  1.00  0.30  0.00                 RSX-H
+                  wB97X-V  0.17  1.00  0.30  0.00                 RSX-H
+                  wr2SCAN  0.00  1.00  0.30  0.00                 RSX-H
+                    M062X  0.54              0.00                 GH-meta
+                      M06  0.27              0.00                 GH-meta
+                   PW6B95  0.28              0.00                 GH-meta
+                  r2SCAN0  0.25              0.00                 GH-meta
+                 r2SCAN50  0.50              0.00                 GH-meta
+                  r2SCANh  0.10              0.00                 GH-meta
+                    TPSS0  0.25              0.00                 GH-meta
+                    TPSSh  0.10              0.00                 GH-meta
+                    B1LYP  0.25              0.00                 GH
+                      B1P  0.25              0.00                 GH
+                  B3LYP_G  0.20              0.00                 GH
+                      B3P  0.20              0.00                 GH
+                     B3PW  0.20              0.00                 GH
+                BHANDHLYP  0.50              0.00                 GH
+                       HF  1.00              0.00                 GH
+                  mPW1LYP  0.25              0.00                 GH
+                   mPW1PW  0.25              0.00                 GH
+                    O3LYP  0.12              0.00                 GH
+                     PBE0  0.25              0.00                 GH
+                    PW1PW  0.25              0.00                 GH
+                  REVPBE0  0.25              0.00                 GH
+                 REVPBE38  0.38              0.00                 GH
+                    X3LYP  0.22              0.00                 GH
+                B97M-D3BJ  0.00              0.00                 mGGA
+                  B97M-D4  0.00              0.00                 mGGA
+                   B97M-V  0.00              0.00                 mGGA
+                     M06L  0.00              0.00                 mGGA
+                 SCANfunc  0.00              0.00                 mGGA
+                     TPSS  0.00              0.00                 mGGA
+                   r2SCAN  0.00              0.00                 mGGA
+                     BLYP  0.00              0.00                 GGA
+                     BP86  0.00              0.00                 GGA
+                     GLYP  0.00              0.00                 GGA
+                   mPWLYP  0.00              0.00                 GGA
+                    mPWPW  0.00              0.00                 GGA
+                     OLYP  0.00              0.00                 GGA
+                      PBE  0.00              0.00                 GGA
+                     PW91  0.00              0.00                 GGA
+                      PWP  0.00              0.00                 GGA
+                   REVPBE  0.00              0.00                 GGA
+                     RPBE  0.00              0.00                 GGA
+                 RPW86PBE  0.00              0.00                 GGA
+                     XLYP  0.00              0.00                 GGA
+                      HFS  0.00              0.00                 LSDA
+                      LDA  0.00              0.00                 LSDA
+                    PWLDA  0.00              0.00                 LSDA
+                     VWN3  0.00              0.00                 LSDA
+                      VWN  0.00              0.00                 LSDA
+                                  
