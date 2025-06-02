@@ -34,6 +34,8 @@ parser.add_argument('--corr-reference', action='store_true', default=False, help
 parser.add_argument('--std-plot', action='store_true', default=False, help='Plot standard deviation')
 parser.add_argument('--mae-plot', action='store_true', default=False, help='Plot standard deviation')
 parser.add_argument('--std-plot-jctc', action='store_true', default=False, help='Plot standard deviation with the data of the JCTC paper')
+parser.add_argument('--corr-bh-re', action='store_true', default=False, help='Plot correlation between barrier height and reaction energies')
+parser.add_argument('--corr-bh9-cyclo', action='store_true', default=False, help='Plot correlation between barrier height and reaction energies')
 
 
 functionals = {'wB2PLYP': '$\omega$B2PLYP', 'wB2PLYP18':'$\omega$B2PLYP18', 'wB2GP-PLYP':'$\omega$B2GP-PLYP',
@@ -43,7 +45,7 @@ functionals = {'wB2PLYP': '$\omega$B2PLYP', 'wB2PLYP18':'$\omega$B2PLYP18', 'wB2
                'wB97M-D4rev': '$\omega$B97M-D4rev', 'wB97M-V': '$\omega$B97M-V', 'wB97X': '$\omega$B97X', 'wB97X-D3BJ': '$\omega$B97X-D3BJ',
                'wB97X-D3': '$\omega$B97X-D3', 'wB97X-D4': '$\omega$B97X-D4', 'wB97X-D4rev': '$\omega$B97X-D4rev', 'wr2SCAN' : '$\omega$r$^2$SCAN',
                'wB97X-V': '$\omega$B97X-V', 'r2SCAN0' : 'r$^2$SCAN0', 'r2SCAN50' : 'r$^2$SCAN50',  'r2SCANh' : 'r$^2$SCANh',  'r2SCAN' : 'r$^2$SCAN',
-               'wB97': '$\omega$B97',}
+               'wB97': '$\omega$B97', 'M062X': 'M06-2X', 'M06L': 'M06-L'}
 
 
 def combine_and_compute_std(folder_path):
@@ -137,7 +139,7 @@ def calculate_mae(reference_file, full_data, exx_data):
     squared_columns = [column for column in df_fx_rxn.columns if 'DELT_2' in column]
 
     dict_fx = {}
-    df_fx_rxn.to_csv('aaaaa.csv')
+    
     columns_list = [delta_columns, signed_columns, squared_columns]
 
     for i, columns in enumerate(columns_list):
@@ -154,21 +156,31 @@ def calculate_mae(reference_file, full_data, exx_data):
                     functional = column[:-19]
                     column_reverse = f'{functional}-DFT-reverse-DELT_2'
 
-                mean = df_fx_rxn[[column, column_reverse]].to_numpy().mean()
+                if i == 0:
+                    mean = df_fx_rxn[[column, column_reverse]].to_numpy().mean()
+                    dict_fx[functional] = dict_fx.get(functional, []) + [mean]
+
+                    std = df_fx_rxn[[column, column_reverse]].to_numpy().std()
+                    dict_fx[functional] = dict_fx.get(functional, []) + [std]
+
+                    mean = df_fx_rxn[[column]].to_numpy().mean()
+                    dict_fx[functional] = dict_fx.get(functional, []) + [mean]
+
+                    mean = df_fx_rxn[[column_reverse]].to_numpy().mean()
+                    dict_fx[functional] = dict_fx.get(functional, []) + [mean]
                 
                 if i == 1:
+                    mean = df_fx_rxn[[column, column_reverse]].to_numpy().mean()
+                    dict_fx[functional] = dict_fx.get(functional, []) + [mean]
                     max = df_fx_rxn[[column, column_reverse]].to_numpy().max()
                     min = df_fx_rxn[[column, column_reverse]].to_numpy().min()
                     dict_fx[functional] = dict_fx.get(functional, []) + [max]
                     dict_fx[functional] = dict_fx.get(functional, []) + [min]
+
                 if i == 2:
+                    mean = df_fx_rxn[[column, column_reverse]].to_numpy().mean()
                     mean = np.sqrt(mean)
-
-                dict_fx[functional] = dict_fx.get(functional, []) + [mean]
-
-                if i == 0:
-                    std = df_fx_rxn[[column, column_reverse]].to_numpy().std()
-                    dict_fx[functional] = dict_fx.get(functional, []) + [std]
+                    dict_fx[functional] = dict_fx.get(functional, []) + [mean]                    
 
             elif 'reaction' in column:
                 if i == 0:
@@ -192,19 +204,19 @@ def calculate_mae(reference_file, full_data, exx_data):
                     std = df_fx_rxn[[column]].to_numpy().std()
                     dict_fx[functional] = dict_fx.get(functional, []) + [std]
 
-    df_mae = pd.DataFrame.from_dict(dict_fx, orient='index', columns=['MAE barrier', 'STD barrier', 'MAE reaction', 'STD reaction', 'Max BH', 'Min BH', 'MSE barrier', 'Max RE', 'Min RE', 'MSE reaction', 'RMSD barrier', 'RMSD reaction'])
+    df_mae = pd.DataFrame.from_dict(dict_fx, orient='index', columns=['MAD barrier',  'STD barrier', 'MAD barrier forward', 'MAD barrier reverse', 'MAD reaction', 'STD reaction', 'MSD barrier', 'Max BH', 'Min BH', 'Max RE', 'Min RE', 'MSD reaction', 'RMSD barrier', 'RMSD reaction'])
     df_mae.index.names = ['Methods']
     df_mae.reset_index(inplace=True)
     
     df_mae["Rung"] = df_mae['Methods'].apply(lambda x: df_exx.loc[x].rung)
-    df_mae["rate_barrier"] = df_mae["MAE barrier"]/df_mae["RMSD barrier"]
-    df_mae["rate_reaction"] = df_mae["MAE reaction"]/df_mae["RMSD reaction"]
+    df_mae["rate_barrier"] = df_mae["MAD barrier"]/df_mae["RMSD barrier"]
+    df_mae["rate_reaction"] = df_mae["MAD reaction"]/df_mae["RMSD reaction"]
 
     rung_order = {"DH": 0, "RS-hybrid": 1, "hybrid": 2, "mGGA": 3, "GGA": 4, "LSDA": 5, "other": 6}
     df_mae["Rung"] = pd.Categorical(df_mae["Rung"], categories=rung_order.keys(), ordered=True)
     df_mae = df_mae.round(2)
 
-    dict_df = {'BH': "MAE barrier", 'RE': "MAE reaction"}
+    dict_df = {'BH': "MAD barrier", 'RE': "MAD reaction"}
 
     for key in dict_df.keys():
         df_mae = df_mae.sort_values(["Rung", dict_df[key]])
@@ -231,6 +243,7 @@ def calculate_mae(reference_file, full_data, exx_data):
 
         plt.tight_layout()
         plt.savefig(f'mae_95_approaches_{key}.pdf', dpi=300)
+        plt.savefig(f'mae_95_approaches_{key}.png', dpi=300)
     
     plt.clf()
 
@@ -249,12 +262,12 @@ def calculate_mae(reference_file, full_data, exx_data):
 
     df_boxplot = pd.DataFrame(boxplot_data)
     df_boxplot["Rung"] = df_boxplot['Methods'].apply(lambda x: df_exx.loc[x].rung)
-    #import pdb; pdb.set_trace()
     df_boxplot["Rung"] = pd.Categorical(df_boxplot["Rung"], categories=rung_order.keys(), ordered=True)
     df_boxplot['Methods'] = df_boxplot['Methods'].replace(functionals)
     df_boxplot = df_boxplot.sort_values(["Rung"])
     
 
+    
     plt.figure(figsize=(10, 6))
     plt.axhline(0.0, color='black', linewidth=1.2, linestyle='--')
     sns.set_style('ticks')
@@ -267,7 +280,8 @@ def calculate_mae(reference_file, full_data, exx_data):
                 meanprops={"marker": "+", "markeredgecolor": "black", "markersize": "12"},
                 width=0.4, hue='Rung', linewidth=2, hue_order=['DH', 'RS-hybrid', 'hybrid'])
     plt.title(f'')
-    plt.ylabel("$\Delta$$\Delta$E $\Delta$E$^{\ddag}$ (kcal mol$^{-1}$)")
+    plt.ylabel("$\Delta$$\Delta$E $\Delta$E$^{\ddag}_{forward}$ (kcal mol$^{-1}$)")
+    #plt.ylabel("$\Delta$$\Delta$E $\Delta_r$E (kcal mol$^{-1}$)")
     plt.xlabel("")
     plt.xticks(rotation=90)
 
@@ -276,9 +290,8 @@ def calculate_mae(reference_file, full_data, exx_data):
     plt.legend(by_label.values(), by_label.keys(), title="", loc='best')    
     plt.tight_layout()
 
-    plt.savefig('boxplot_bh.pdf', dpi=450)
-    plt.savefig('boxplot_bh.png', dpi=450)
-
+    plt.savefig('boxplot_BH.pdf', dpi=450)
+    plt.savefig('boxplot_BH.png', dpi=450)
 
 def build_boxplot_data(df_fx_rxn, metric, subset_functionals, reaction_mode):
     data = []
@@ -623,50 +636,56 @@ def std_plot_jctc(std_surrogate_model, std_bh9, std_cyclo70):
     plt.savefig('std_20_jctc.png', dpi=300)
     plt.savefig('std_20_jctc.pdf', dpi=300)
     
+def correlation_barrier_reaction(maes_cyclo70, maes_bh9):
 
-#### additional
+    df_mae_bh9 = pd.read_csv(maes_bh9)
+    df_mae_cyclo70 = pd.read_csv(maes_cyclo70)
+
+    method_to_mae = df_mae_bh9.set_index('Methods')['MAE barrier']
+    df_mae_cyclo70["MAE barrier"] = df_mae_cyclo70['Methods'].map(method_to_mae)
+
+    fig, axes = plt.subplots(1, 1, figsize=(4, 4))
+    sns.scatterplot(y=df_mae_cyclo70['MAE barrier'], x=df_mae_cyclo70['MAE reaction'], edgecolor="black", s=45, color="darkmagenta")
+
+    lims = [min(df_mae_cyclo70['MAE barrier'].min(), df_mae_cyclo70['MAE reaction'].min()), max(df_mae_cyclo70['MAE barrier'].max(), df_mae_cyclo70['MAE reaction'].max())]
+    axes.plot(lims, lims, 'k--', alpha=0.75, zorder=0)
+    axes.set_ylabel('MAD $\Delta$E$^{\ddag}$ (kcal mol$^{-1}$)')
+    axes.set_xlabel('MAD $\Delta_r$E (kcal mol$^{-1}$)')
+    plt.ylim((0, 30))
+    plt.xlim((0, 30))
+    ticks = np.arange(0, 31, 5)
+    plt.xticks(ticks)
+    plt.yticks(ticks)
+    plt.tight_layout()
+    plt.savefig('correlation_mad_bh_re.png', dpi=450)
 
 
-def correlation_eric(maes_cyclo70, maes_bh9):
+def correlation_mad_cyclo_bh9(maes_cyclo70, maes_bh9):
     
     df_mae_bh9 = pd.read_csv(maes_bh9)
     df_mae_cyclo70 = pd.read_csv(maes_cyclo70)
-    df_mae_cyclo70 = df_mae_cyclo70.loc[df_mae_cyclo70['Methods'].isin(df_mae_bh9['Methods'])]
-    
-    df_mae_bh9['Subset'] = ['BH9'] * len(df_mae_bh9)
-    df_mae_cyclo70['Subset'] = ['Cyclo70'] * len(df_mae_cyclo70)
+    method_to_mae = df_mae_bh9.set_index('Methods')['MAE barrier forward']
+    df_mae_cyclo70["MAE barrier forward BH9"] = df_mae_cyclo70['Methods'].map(method_to_mae)
 
     subset_functionals = ['PBE-QIDH', 'kPr2SCAN50', 'revDOD-PBEP86-D4_2021', 'wB97X-2', 'wB2PLYP18', 'wB97M-V', 'wB97M-D4rev', 'wB97M-D3BJ', 'r2SCAN50', 'M062X', 'r2SCAN0']
     
     fig, axes = plt.subplots(1, 1, figsize=(4, 4))
-    sns.scatterplot(y=df_mae_cyclo70['MAE reaction'], x=df_mae_bh9['MAE reaction'], edgecolor="black", s=45, color="darkmagenta")
+    sns.scatterplot(y=df_mae_cyclo70['MAE barrier forward'], x=df_mae_cyclo70['MAE barrier forward BH9'], edgecolor="black", s=45, color="darkmagenta")
 
     # Line y=x for correlation visualization
-    lims = [min(df_mae_cyclo70['MAE reaction'].min(), df_mae_bh9['MAE reaction'].min()), max(df_mae_cyclo70['MAE reaction'].max(), df_mae_bh9['MAE reaction'].max())]
+    lims = [min(df_mae_cyclo70['MAE barrier forward'].min(), df_mae_bh9['MAE barrier forward'].min()), max(df_mae_cyclo70['MAE barrier forward'].max(), df_mae_bh9['MAE barrier forward'].max())]
     axes.plot(lims, lims, 'k--', alpha=0.75, zorder=0)
-    axes.set_ylabel('MAD $\Delta_r$E Cyclo70 (kcal mol$^{-1}$)')
-    axes.set_xlabel('MAD $\Delta_r$E BH9 (kcal mol$^{-1}$)')
+    #axes.set_ylabel('MAD $\Delta_r$E Cyclo70 (kcal mol$^{-1}$)')
+    #axes.set_xlabel('MAD $\Delta_r$E BH9 (kcal mol$^{-1}$)')
+    axes.set_ylabel('MAD $\Delta$E$^{\ddag}_{forward}$ Cyclo70 (kcal mol$^{-1}$)')
+    axes.set_xlabel('MAD $\Delta$E$^{\ddag}_{forward}$ BH9 (kcal mol$^{-1}$)')
     plt.ylim((0, 20))
     plt.xlim((0, 20))
     ticks = np.arange(0, 21, 5)
     plt.xticks(ticks)
     plt.yticks(ticks)
     plt.tight_layout()
-    plt.savefig('correlation_re_eric.png', dpi=450)
-
-    df_pics = pd.concat([df_mae_cyclo70, df_mae_bh9], ignore_index=True)
-    fig, axes = plt.subplots(1, 1, figsize=(15, 6))
-
-    #df_pics = df_pics.loc[df_pics['Methods'].isin(subset_functionals)]
-
-    plt.figure(figsize=(10, 6))
-    sns.set_theme(style="white")
-    plot = sns.barplot(x='Methods', y='MAE barrier', hue='Subset', data=df_pics, palette='dark')
-    plt.ylabel('MAD $\Delta$E$^{\ddag}$ (kcal mol$^{-1}$)')
-    plt.ylim((0, 14))
-    plt.xticks(rotation=90, fontsize=6)
-    plt.tight_layout()
-    plt.savefig('histogram.png', dpi=450)
+    plt.savefig('correlation_bh_eric.png', dpi=450)
 
 
 if __name__ == "__main__":
@@ -691,10 +710,17 @@ if __name__ == "__main__":
 
     if args.std_plot_jctc:
        std_plot_jctc('jctc_data/chemical_space_ucb_9.csv',  'jctc_data/data_smiles_curated.csv', 'jctc_data/final_overview_data_8.csv')
+
+    if args.corr_bh_re:
+        correlation_barrier_reaction('mae/mae_ordered_BH.csv', 'mae/mae_ordered_BH_BH9.csv')
+
+    if args.corr_bh9_cyclo:
+        correlation_mad_cyclo_bh9('mae/mae_ordered_BH.csv', 'mae/mae_ordered_BH_BH9.csv')
     
     
-    #calculate_mae('reference_values/references_bh9.dat', 'bh9/full_data.csv', args.rung_data)
-    correlation_eric('mae/mae_ordered_BH.csv', 'mae/mae_ordered_BH_BH9.csv')
+    #calculate_mae('reference_values/references_bh9.dat', 'bh9/full_data.csv', 'complementary_files/methods_exx.csv')
+    
+    
     
     
     
