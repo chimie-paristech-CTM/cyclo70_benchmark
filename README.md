@@ -26,7 +26,7 @@ Uploading `interactive_plot.ipynb` on [Google Colab](https://colab.research.goog
 ```
 @article{cyclo70_benchmarkg,
   author = {Alfonso-Ramos, Javier E. and Adamo, Carlo and Stuyver, Thijs and Br{\'e}mond, {\'E}ric },
-  title = {Improving the Reliability of, and Confidence in, {DFT} Functional Benchmarking through Active Learning},
+  title = {CYCLO70: A New Challenging Pericyclic Benchmarking Set for Kinetics and Thermochemistry Evaluation.},
   journal = {ChemRxiv},
   year = {2025},
 }
