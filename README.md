@@ -27,7 +27,8 @@ Uploading `interactive_plot.ipynb` on [Google Colab](https://colab.research.goog
 @article{cyclo70_benchmarkg,
   author = {Alfonso-Ramos, Javier E. and Adamo, Carlo and Br{\'e}mond, {\'E}ric and Stuyver, Thijs},
   title = {CYCLO70: A New Challenging Pericyclic Benchmarking Set for Kinetics and Thermochemistry Evaluation.},
-  journal = {ChemRxiv},
+  journal = {J. Chem. Theory Comput.},
   year = {2025},
+  doi = {10.1021/acs.jctc.5c00925},
 }
 ```
